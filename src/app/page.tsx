@@ -4,10 +4,11 @@ import Features from "@/components/Features";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
+import type { User } from "@prisma/client";
 
 export default async function Home() {
-  // Server-Komponente: Daten serverseitig laden
-  const users = await prisma.user.findMany({
+  // Typ für users ist jetzt klar (User[])
+  const users: User[] = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     take: 25,
   });
@@ -20,7 +21,6 @@ export default async function Home() {
         <Features />
         <Contact />
 
-        {/* einfache Liste der letzten Einträge */}
         <section className="section" id="signups">
           <h2 className="section-title">Neue Einträge</h2>
           <div className="card" style={{ overflowX: "auto" }}>
@@ -36,7 +36,7 @@ export default async function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u) => (
+                  {users.map((u: User) => (
                     <tr key={u.id} style={{ borderTop: "1px solid rgba(212,175,55,0.2)" }}>
                       <td style={{ padding: ".5rem" }}>{u.name ?? "—"}</td>
                       <td style={{ padding: ".5rem" }}>{u.email}</td>
