@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import type { User } from "@prisma/client";
 
 export default async function Home() {
-  // Typ für users ist jetzt klar (User[])
+  // Liefert User[] – wir typisieren explizit, damit TS in Vercel nicht meckert
   const users: User[] = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     take: 25,
@@ -37,7 +37,10 @@ export default async function Home() {
                 </thead>
                 <tbody>
                   {users.map((u: User) => (
-                    <tr key={u.id} style={{ borderTop: "1px solid rgba(212,175,55,0.2)" }}>
+                    <tr
+                      key={u.id}
+                      style={{ borderTop: "1px solid rgba(212,175,55,0.2)" }}
+                    >
                       <td style={{ padding: ".5rem" }}>{u.name ?? "—"}</td>
                       <td style={{ padding: ".5rem" }}>{u.email}</td>
                       <td style={{ padding: ".5rem" }}>
