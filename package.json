@@ -29,5 +29,9 @@
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+
+  "postinstall": "prisma generate",
+  "build": "npm run postinstall && next build"
+
 }

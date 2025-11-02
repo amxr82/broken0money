@@ -4,14 +4,20 @@ import Features from "@/components/Features";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
-import type { User } from "@prisma/client";
+
+// einfacher, lokaler Typ – unabhängig von @prisma/client
+type UserRow = {
+  id: string;
+  name: string | null;
+  email: string;
+  createdAt: Date | string;
+};
 
 export default async function Home() {
-  // Liefert User[] – wir typisieren explizit, damit TS in Vercel nicht meckert
-  const users: User[] = await prisma.user.findMany({
+  const users = (await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     take: 25,
-  });
+  })) as unknown as UserRow[];
 
   return (
     <>
@@ -36,11 +42,8 @@ export default async function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u: User) => (
-                    <tr
-                      key={u.id}
-                      style={{ borderTop: "1px solid rgba(212,175,55,0.2)" }}
-                    >
+                  {users.map((u: UserRow) => (
+                    <tr key={u.id} style={{ borderTop: "1px solid rgba(212,175,55,0.2)" }}>
                       <td style={{ padding: ".5rem" }}>{u.name ?? "—"}</td>
                       <td style={{ padding: ".5rem" }}>{u.email}</td>
                       <td style={{ padding: ".5rem" }}>
