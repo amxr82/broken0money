@@ -5,19 +5,13 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 
-// einfacher, lokaler Typ – unabhängig von @prisma/client
-type UserRow = {
-  id: string;
-  name: string | null;
-  email: string;
-  createdAt: Date | string;
-};
-
 export default async function Home() {
-  const users = (await prisma.user.findMany({
+  // schlankes select -> klares Shape
+  const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     take: 25,
-  })) as unknown as UserRow[];
+    select: { id: true, name: true, email: true, createdAt: true },
+  });
 
   return (
     <>
@@ -42,7 +36,8 @@ export default async function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u: UserRow) => (
+                  {/* <-- HIER der harte Fix: u explizit typisieren */}
+                  {users.map((u: { id: string; name: string | null; email: string; createdAt: Date | string }) => (
                     <tr key={u.id} style={{ borderTop: "1px solid rgba(212,175,55,0.2)" }}>
                       <td style={{ padding: ".5rem" }}>{u.name ?? "—"}</td>
                       <td style={{ padding: ".5rem" }}>{u.email}</td>
